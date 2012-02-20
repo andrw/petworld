@@ -15,6 +15,8 @@ var right = false;
 var up = false;
 var down = false;
 var choice = 10;
+var dx =20;
+var dy =20;
 
 function init() {
 //window.addEventListener('keydown',doKeyDown,true);
@@ -47,67 +49,43 @@ setInterval("randomize()", 2000);
 }
 
 function randomize() {
-	up = false;
-	down = false;
-	right = false;
-	left = false;
 	choice = Math.floor(8*Math.random()+1);
-	/*
-	if(choice == 1 ) up = true;
-	if(choice == 2) right = true;
-	if(choice == 3) down = true;
-	if(choice == 4) left = true;
-	if(choice == 5) up = true;
-	if(choice == 6) right = true;
-	if(choice == 7) down = true;
-	if(choice == 8) left = true;
-	*/
 }
 
 function draw() {
 	clearCanvas();
-	/*if(up == true) {
-		y-=2;
-	}	
-	else if(right ==  true) {
-		x+=2;
-	}
-	else if(down == true) {
-		y+=2;
-	}
-	else if(left == true) {
-		x-=2;
-	}*/
 	switch(choice) {
 		case 1:
-		y-=2;
+		y-=dy;
 		break;
 		case 2:
-		x+=2;
+		x+=dx;
 		break;
 		case 3:
-		y+=2;
+		y+=dy;
 		break;
 		case 4:
-		x-=2;
+		x-=dx;
 		break;
 		case 5:
-		x-=1;
-		y-=1;
+		x-=dx/2;
+		y-=dy/2;
 		break;
 		case 6:
-		x-=1;
-		y+=1;
+		x-=dx/2;
+		y+=dy/2;
 		break;
 		case 7:
-		x+=1;
-		y-=1;
+		x+=dx/2;
+		y-=dy/2;
 		break;
 		case 8:
-		x+=1;
-		y+=1;
+		x+=dx/2;
+		y+=dy/2;
 		break;
 	}
+	if(y<0 || y>canvas.height)	dy=-dy;
+	if(x<0 || x>canvas.width) dx=-dx;
 	ctx.fillRect(x,y,10,10);
 }
 

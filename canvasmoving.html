@@ -7,45 +7,54 @@
 <script type="application/x-javascript">
 
 var canvas;
-var canvas;
-var x=0;
-var y=0;
+var animalx=0;
+var animaly=0;
 var left= false;
 var right = false;
 var up = false;
 var down = false;
 var choice = 10;
-var dx =20;
-var dy =20;
+var dx =2;
+var dy =2;
+var width = canvas.width;
+var height =  canvas.height;
+var movementInterval;
+var randomInterval;
+var moving;
+var targetx;
+var targety;
+var toPoint;
 
 function init() {
-//window.addEventListener('keydown',doKeyDown,true);
+	//window.addEventListener('keydown',doKeyDown,true);
 
-canvas = document.getElementById("canvas");
- 
- 	ctx = canvas.getContext("2d");
-	x = canvas.width/2;
-	y = canvas.height/2;
+	canvas = document.getElementById("canvas");
+	canvas.addEventListener('click', on_canvas_click, false);
+	
+	ctx = canvas.getContext("2d");
+	animalx = canvas.width/2;
+	animaly = canvas.height/2;
+	moving = true;
 	run2();
 }
 
 function run2() {
 	// start box in middle
-// randomly choose a number in between 20-50 to move
-// randomly choose a direction to loop (out of 9, bidirectional)
-// loop the movement in that direction for the randomized number
-// 1
-// should draw from the start fine
+	// randomly choose a number in between 20-50 to move
+	// randomly choose a direction to loop (out of 9, bidirectional)
+	// loop the movement in that direction for the randomized number
+	// 1
+	// should draw from the start fine
 
-// 2
-distance = Math.floor(10*Math.random()+10); // this is how much I want to move forward
-//alert(distance);
-// 3
-// hard code right for now
+	// 2
+	distance = Math.floor(10*Math.random()+10); // this is how much I want to move forward
+	//alert(distance);
+	// 3
+	// hard code right for now
 
-// 4
-setInterval("draw()", 50);
-setInterval("randomize()", 2000);
+	// 4
+	movementInterval = setInterval("draw()", 50);
+	randomInterval = setInterval("randomize()", 2000);
 }
 
 function randomize() {
@@ -56,55 +65,96 @@ function draw() {
 	clearCanvas();
 	switch(choice) {
 		case 1:
-		y-=dy;
+		animaly-=dy;
 		break;
 		case 2:
-		x+=dx;
+		animalx+=dx;
 		break;
 		case 3:
-		y+=dy;
+		animaly+=dy;
 		break;
 		case 4:
-		x-=dx;
+		animalx-=dx;
 		break;
 		case 5:
-		x-=dx/2;
-		y-=dy/2;
+		animalx-=dx/2;
+		animaly-=dy/2;
 		break;
 		case 6:
-		x-=dx/2;
-		y+=dy/2;
+		animalx-=dx/2;
+		animaly+=dy/2;
 		break;
 		case 7:
-		x+=dx/2;
-		y-=dy/2;
+		animalx+=dx/2;
+		animaly-=dy/2;
 		break;
 		case 8:
-		x+=dx/2;
-		y+=dy/2;
+		animalx+=dx/2;
+		animaly+=dy/2;
 		break;
 	}
-	if(y<0 || y>canvas.height)	dy=-dy;
-	if(x<0 || x>canvas.width) dx=-dx;
-	ctx.fillRect(x,y,10,10);
+	if(animaly<0 || animaly>canvas.height)	dy=-dy;
+	if(animalx<0 || animalx>canvas.width) dx=-dx;
+	ctx.fillRect(animalx,animaly,10,10);
 }
 
 function onKeyDown(evt) {
-  if (evt.keyCode == 39) rightKey = true;
-  else if (evt.keyCode == 37) leftKey = true;
-  if (evt.keyCode == 38) upKey = true;
-  else if (evt.keyCode == 40) downKey = true;
+	if (evt.keyCode == 39) rightKey = true;
+	else if (evt.keyCode == 37) leftKey = true;
+	if (evt.keyCode == 38) upKey = true;
+	else if (evt.keyCode == 40) downKey = true;
 }
 
 function onKeyUp(evt) {
-  if (evt.keyCode == 39) rightKey = false;
-  else if (evt.keyCode == 37) leftKey = false;
-  if (evt.keyCode == 38) upKey = false;
-  else if (evt.keyCode == 40) downKey = false;
+	if (evt.keyCode == 39) rightKey = false;
+	else if (evt.keyCode == 37) leftKey = false;
+	if (evt.keyCode == 38) upKey = false;
+	else if (evt.keyCode == 40) downKey = false;
 }
 
 function clearCanvas() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function on_canvas_click(ev) {
+clearInterval(movementInterval);
+if(moving) {
+moving =  false;
+targetx = ev.x-canvas.offsetLeft;
+targety = ev.y-canvas.offsetTop;
+toPoint = setInterval("toFood(targetx, targety)", 50);
+}
+}
+
+function toFood(targetx, targety) {
+	if(animalx<targetx) {
+		animalx+=dx;
+	}
+	else if (animalx>targetx) {
+		animalx-=dx;
+	}
+	if(animaly<targety) {
+		animaly+=dy;
+	}
+	else if(animaly>targety) {
+		animaly-=dy;
+	}
+	if(approx(targetx, animalx) && approx(targety, animaly)) {
+		clearInterval(toPoint);
+		movementInterval = setInterval("draw()", 50);
+		moving=true;
+	}
+	clearCanvas();
+		ctx.fillRect(animalx,animaly,10,10);
+}
+
+function approx(a, b) {
+	if(Math.floor(a)-1 == Math.floor(b) || Math.floor(a) == Math.floor(b) || Math.floor(a)+1 == Math.floor(b)){
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 $(document).keydown(onKeyDown);
